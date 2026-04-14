@@ -12,3 +12,4 @@ C:\Users\UTENTE\Desktop\test_C#\GestioneAuleStudio\obj\Debug\net9.0\refint\Gesti
 C:\Users\UTENTE\Desktop\test_C#\GestioneAuleStudio\obj\Debug\net9.0\GestioneAuleStudio.pdb
 C:\Users\UTENTE\Desktop\test_C#\GestioneAuleStudio\obj\Debug\net9.0\GestioneAuleStudio.genruntimeconfig.cache
 C:\Users\UTENTE\Desktop\test_C#\GestioneAuleStudio\obj\Debug\net9.0\ref\GestioneAuleStudio.dll
+C:\Users\UTENTE\Desktop\test_C#\GestioneAuleStudio\obj\Debug\net9.0\GestioneAuleStudio.sourcelink.json

@@ -69,20 +69,30 @@ namespace GestioneAuleStudio
 
                         // 2. Chiediamo prima giorno e orario (servono per calcolare i posti liberi)
                         Console.WriteLine("\n--- Dettagli Turno ---");
-                        Console.Write("Giorno (YYYY-MM-DD): "); DateTime giorno = DateTime.Parse(Console.ReadLine());
+                        Console.Write("Giorno (DD-MM-YYYY): "); DateTime giorno = DateTime.ParseExact(Console.ReadLine(), "dd-MM-yyyy", null);
                         Console.Write("Fascia Oraria (es. 09-11): "); string fascia = Console.ReadLine();
 
                         // 3. Mostriamo l'elenco delle aule con la disponibilità in tempo reale
                         Console.WriteLine($"\n--- Aule disponibili per il {giorno:dd/MM/yyyy} ({fascia}) ---");
-                        foreach (var a in auleDisponibili)
+                        for (int i = 0; i < auleDisponibili.Count; i++)
                         {
+                            var a = auleDisponibili[i];
                             int postiLiberi = _sistema.CalcolaPostiDisponibili(a, giorno, fascia);
-                            Console.WriteLine($"- {a.Nome} | Capienza max: {a.CapienzaMassima} | Posti liberi: {postiLiberi}");
+                            Console.WriteLine($"{i + 1}. {a.Nome} | Capienza max: {a.CapienzaMassima} | Posti liberi: {postiLiberi}");
                         }
 
                         // 4. Ora l'utente può scegliere l'aula e i posti in modo consapevole
                         Console.WriteLine("\n---------------------------------------------------");
-                        Console.Write("Digita il Nome dell'Aula scelta: "); string aula = Console.ReadLine();
+                        Console.Write("Scegli il numero dell'aula: "); 
+                        int sceltaAula = int.Parse(Console.ReadLine()) - 1;
+                        
+                        if (sceltaAula < 0 || sceltaAula >= auleDisponibili.Count)
+                        {
+                            Console.WriteLine("Errore: numero aula non valido.");
+                            break;
+                        }
+                        
+                        string aula = auleDisponibili[sceltaAula].Nome;
                         Console.Write("Posti da prenotare: "); int posti = int.Parse(Console.ReadLine());
                         
                         // 5. Inviamo la richiesta al sistema
@@ -97,15 +107,53 @@ namespace GestioneAuleStudio
                             break;
 
                         case "3":
-                            Console.Write("Inserisci l'ID della prenotazione da modificare: "); 
-                            Guid idMod = Guid.Parse(Console.ReadLine());
-                            Console.Write("Nuovo Nome Aula: "); string nAula = Console.ReadLine();
-                            Console.Write("Nuovo Giorno (YYYY-MM-DD): "); DateTime nGiorno = DateTime.Parse(Console.ReadLine());
+                            var prenotazioniDaModificare = _sistema.OttieniPrenotazioniStudente(nomeStudente);
+                            if (prenotazioniDaModificare.Count == 0)
+                            {
+                                Console.WriteLine("Non hai nessuna prenotazione da modificare.");
+                                break;
+                            }
+
+                            Console.WriteLine("\n--- Tue Prenotazioni ---");
+                            for (int i = 0; i < prenotazioniDaModificare.Count; i++)
+                            {
+                                var p = prenotazioniDaModificare[i];
+                                Console.WriteLine($"{i + 1}. Aula: {p.AulaPrenotata.Nome} | {p.Giorno:dd/MM/yyyy} | Ore: {p.FasciaOraria} | Posti: {p.PostiRichiesti}");
+                            }
+
+                            Console.Write("Seleziona il numero della prenotazione da modificare: ");
+                            int sceltaPrenotazione = int.Parse(Console.ReadLine()) - 1;
+
+                            if (sceltaPrenotazione < 0 || sceltaPrenotazione >= prenotazioniDaModificare.Count)
+                            {
+                                Console.WriteLine("Errore: numero prenotazione non valido.");
+                                break;
+                            }
+
+                            Guid idMod = prenotazioniDaModificare[sceltaPrenotazione].Id;
+                            
+                            var aulePerModifica = _sistema.OttieniAule();
+                            Console.WriteLine("\n--- Aule disponibili ---");
+                            for (int i = 0; i < aulePerModifica.Count; i++)
+                            {
+                                Console.WriteLine($"{i + 1}. {aulePerModifica[i].Nome} | Capienza max: {aulePerModifica[i].CapienzaMassima}");
+                            }
+                            Console.Write("Seleziona il numero della nuova aula: ");
+                            int sceltaNuovaAula = int.Parse(Console.ReadLine()) - 1;
+
+                            if (sceltaNuovaAula < 0 || sceltaNuovaAula >= aulePerModifica.Count)
+                            {
+                                Console.WriteLine("Errore: numero aula non valido.");
+                                break;
+                            }
+
+                            string nAula = aulePerModifica[sceltaNuovaAula].Nome;
+                            Console.Write("Nuovo Giorno (DD-MM-YYYY): "); DateTime nGiorno = DateTime.ParseExact(Console.ReadLine(), "dd-MM-yyyy", null);
                             Console.Write("Nuova Fascia Oraria: "); string nFascia = Console.ReadLine();
                             Console.Write("Nuovi Posti: "); int nPosti = int.Parse(Console.ReadLine());
                             
                             _sistema.ModificaPrenotazione(idMod, nAula, nGiorno, nFascia, nPosti);
-                            Console.WriteLine("Prenotazione modificata!");
+                            Console.WriteLine("Prenotazione modificata con successo!");
                             break;
 
                         case "4":
