@@ -1,4 +1,4 @@
-# Sistema di Prenotazione Aule Studio
+# Sistema di Prenotazione Aule Studio - Antonio Savino
 
 Un'applicazione C# console per gestire la prenotazione e l'amministrazione di aule studio universitarie.
 
