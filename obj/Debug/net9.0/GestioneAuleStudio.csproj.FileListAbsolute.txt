@@ -1,0 +1,14 @@
+C:\Users\UTENTE\Desktop\test_C#\GestioneAuleStudio\bin\Debug\net9.0\GestioneAuleStudio.exe
+C:\Users\UTENTE\Desktop\test_C#\GestioneAuleStudio\bin\Debug\net9.0\GestioneAuleStudio.deps.json
+C:\Users\UTENTE\Desktop\test_C#\GestioneAuleStudio\bin\Debug\net9.0\GestioneAuleStudio.runtimeconfig.json
+C:\Users\UTENTE\Desktop\test_C#\GestioneAuleStudio\bin\Debug\net9.0\GestioneAuleStudio.dll
+C:\Users\UTENTE\Desktop\test_C#\GestioneAuleStudio\bin\Debug\net9.0\GestioneAuleStudio.pdb
+C:\Users\UTENTE\Desktop\test_C#\GestioneAuleStudio\obj\Debug\net9.0\GestioneAuleStudio.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\UTENTE\Desktop\test_C#\GestioneAuleStudio\obj\Debug\net9.0\GestioneAuleStudio.AssemblyInfoInputs.cache
+C:\Users\UTENTE\Desktop\test_C#\GestioneAuleStudio\obj\Debug\net9.0\GestioneAuleStudio.AssemblyInfo.cs
+C:\Users\UTENTE\Desktop\test_C#\GestioneAuleStudio\obj\Debug\net9.0\GestioneAuleStudio.csproj.CoreCompileInputs.cache
+C:\Users\UTENTE\Desktop\test_C#\GestioneAuleStudio\obj\Debug\net9.0\GestioneAuleStudio.dll
+C:\Users\UTENTE\Desktop\test_C#\GestioneAuleStudio\obj\Debug\net9.0\refint\GestioneAuleStudio.dll
+C:\Users\UTENTE\Desktop\test_C#\GestioneAuleStudio\obj\Debug\net9.0\GestioneAuleStudio.pdb
+C:\Users\UTENTE\Desktop\test_C#\GestioneAuleStudio\obj\Debug\net9.0\GestioneAuleStudio.genruntimeconfig.cache
+C:\Users\UTENTE\Desktop\test_C#\GestioneAuleStudio\obj\Debug\net9.0\ref\GestioneAuleStudio.dll
