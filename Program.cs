@@ -7,6 +7,7 @@ namespace GestioneAuleStudio
     class Program
     {
         static SistemaGestione _sistema = new SistemaGestione();
+        static string[] _fasceOrarie = { "8-9", "9-10", "10-11", "11-12", "12-13", "13-14", "14-15", "15-16", "16-17", "17-18", "18-19", "19-20" };
 
         static void Main(string[] args)
         {
@@ -70,7 +71,22 @@ namespace GestioneAuleStudio
                         // 2. Chiediamo prima giorno e orario (servono per calcolare i posti liberi)
                         Console.WriteLine("\n--- Dettagli Turno ---");
                         Console.Write("Giorno (DD-MM-YYYY): "); DateTime giorno = DateTime.ParseExact(Console.ReadLine(), "dd-MM-yyyy", null);
-                        Console.Write("Fascia Oraria (es. 09-11): "); string fascia = Console.ReadLine();
+                        
+                        Console.WriteLine("\n--- Fascie Orarie Disponibili ---");
+                        for (int f = 0; f < _fasceOrarie.Length; f++)
+                        {
+                            Console.WriteLine($"{f + 1}. {_fasceOrarie[f]}");
+                        }
+                        Console.Write("Seleziona il numero della fascia oraria: ");
+                        int sceltaFascia = int.Parse(Console.ReadLine()) - 1;
+                        
+                        if (sceltaFascia < 0 || sceltaFascia >= _fasceOrarie.Length)
+                        {
+                            Console.WriteLine("Errore: fascia oraria non valida.");
+                            break;
+                        }
+                        
+                        string fascia = _fasceOrarie[sceltaFascia];
 
                         // 3. Mostriamo l'elenco delle aule con la disponibilità in tempo reale
                         Console.WriteLine($"\n--- Aule disponibili per il {giorno:dd/MM/yyyy} ({fascia}) ---");
@@ -149,7 +165,22 @@ namespace GestioneAuleStudio
 
                             string nAula = aulePerModifica[sceltaNuovaAula].Nome;
                             Console.Write("Nuovo Giorno (DD-MM-YYYY): "); DateTime nGiorno = DateTime.ParseExact(Console.ReadLine(), "dd-MM-yyyy", null);
-                            Console.Write("Nuova Fascia Oraria: "); string nFascia = Console.ReadLine();
+                            
+                            Console.WriteLine("\n--- Fascie Orarie Disponibili ---");
+                            for (int f = 0; f < _fasceOrarie.Length; f++)
+                            {
+                                Console.WriteLine($"{f + 1}. {_fasceOrarie[f]}");
+                            }
+                            Console.Write("Seleziona il numero della nuova fascia oraria: ");
+                            int sceltaNuovaFascia = int.Parse(Console.ReadLine()) - 1;
+                            
+                            if (sceltaNuovaFascia < 0 || sceltaNuovaFascia >= _fasceOrarie.Length)
+                            {
+                                Console.WriteLine("Errore: fascia oraria non valida.");
+                                break;
+                            }
+                            
+                            string nFascia = _fasceOrarie[sceltaNuovaFascia];
                             Console.Write("Nuovi Posti: "); int nPosti = int.Parse(Console.ReadLine());
                             
                             _sistema.ModificaPrenotazione(idMod, nAula, nGiorno, nFascia, nPosti);
@@ -157,9 +188,31 @@ namespace GestioneAuleStudio
                             break;
 
                         case "4":
-                            Console.Write("Inserisci l'ID della prenotazione da cancellare: "); 
-                            Guid idCanc = Guid.Parse(Console.ReadLine());
-                            if (_sistema.CancellaPrenotazione(idCanc)) Console.WriteLine("Cancellata!");
+                            var prenotazioniDaCancellare = _sistema.OttieniPrenotazioniStudente(nomeStudente);
+                            if (prenotazioniDaCancellare.Count == 0)
+                            {
+                                Console.WriteLine("Non hai nessuna prenotazione da cancellare.");
+                                break;
+                            }
+
+                            Console.WriteLine("\n--- Tue Prenotazioni ---");
+                            for (int i = 0; i < prenotazioniDaCancellare.Count; i++)
+                            {
+                                var p = prenotazioniDaCancellare[i];
+                                Console.WriteLine($"{i + 1}. Aula: {p.AulaPrenotata.Nome} | {p.Giorno:dd/MM/yyyy} | Ore: {p.FasciaOraria} | Posti: {p.PostiRichiesti}");
+                            }
+
+                            Console.Write("Seleziona il numero della prenotazione da cancellare: ");
+                            int sceltaCancellazione = int.Parse(Console.ReadLine()) - 1;
+
+                            if (sceltaCancellazione < 0 || sceltaCancellazione >= prenotazioniDaCancellare.Count)
+                            {
+                                Console.WriteLine("Errore: numero prenotazione non valido.");
+                                break;
+                            }
+
+                            Guid idCanc = prenotazioniDaCancellare[sceltaCancellazione].Id;
+                            if (_sistema.CancellaPrenotazione(idCanc)) Console.WriteLine("Prenotazione cancellata con successo!");
                             else Console.WriteLine("Errore durante la cancellazione.");
                             break;
 
@@ -212,25 +265,88 @@ namespace GestioneAuleStudio
                             break;
 
                         case "3":
-                            Console.Write("Nome aula da rimuovere (eliminerà anche le prenotazioni): "); 
-                            _sistema.RimuoviAula(Console.ReadLine());
-                            Console.WriteLine("Operazione completata.");
+                            var aulePerRimozione = _sistema.OttieniAule();
+                            if (aulePerRimozione.Count == 0)
+                            {
+                                Console.WriteLine("Non ci sono aule da rimuovere.");
+                                break;
+                            }
+
+                            Console.WriteLine("\n--- Aule Disponibili ---");
+                            for (int i = 0; i < aulePerRimozione.Count; i++)
+                            {
+                                Console.WriteLine($"{i + 1}. {aulePerRimozione[i].Nome} | Capienza max: {aulePerRimozione[i].CapienzaMassima}");
+                            }
+                            Console.Write("Seleziona il numero dell'aula da rimuovere (eliminerà anche le prenotazioni): ");
+                            int sceltaRimozioneAula = int.Parse(Console.ReadLine()) - 1;
+                            
+                            if (sceltaRimozioneAula < 0 || sceltaRimozioneAula >= aulePerRimozione.Count)
+                            {
+                                Console.WriteLine("Errore: numero aula non valido.");
+                                break;
+                            }
+                            
+                            _sistema.RimuoviAula(aulePerRimozione[sceltaRimozioneAula].Nome);
+                            Console.WriteLine("Aula rimossa con successo.");
                             break;
 
                         case "4":
-                            Console.Write("Nome aula: "); string aMod = Console.ReadLine();
-                            Console.Write("Nuova capienza (maggiore dell'attuale): "); int nCapienza = int.Parse(Console.ReadLine());
-                            if (_sistema.ModificaCapienzaAula(aMod, nCapienza))
+                            var aulePerCapienza = _sistema.OttieniAule();
+                            if (aulePerCapienza.Count == 0)
+                            {
+                                Console.WriteLine("Non ci sono aule da modificare.");
+                                break;
+                            }
+
+                            Console.WriteLine("\n--- Aule Disponibili ---");
+                            for (int i = 0; i < aulePerCapienza.Count; i++)
+                            {
+                                Console.WriteLine($"{i + 1}. {aulePerCapienza[i].Nome} | Capienza attuale: {aulePerCapienza[i].CapienzaMassima}");
+                            }
+                            Console.Write("Seleziona il numero dell'aula da modificare: ");
+                            int sceltaCapienzaAula = int.Parse(Console.ReadLine()) - 1;
+                            
+                            if (sceltaCapienzaAula < 0 || sceltaCapienzaAula >= aulePerCapienza.Count)
+                            {
+                                Console.WriteLine("Errore: numero aula non valido.");
+                                break;
+                            }
+                            
+                            string aulaSelezionata = aulePerCapienza[sceltaCapienzaAula].Nome;
+                            Console.Write("Nuova capienza (maggiore dell'attuale): "); int nuovaCapienza = int.Parse(Console.ReadLine());
+                            if (_sistema.ModificaCapienzaAula(aulaSelezionata, nuovaCapienza))
                                 Console.WriteLine("Capienza aumentata con successo.");
                             else
                                 Console.WriteLine("Errore: la nuova capienza deve essere maggiore di quella attuale.");
                             break;
 
                         case "5":
-                            Console.Write("Inserisci l'ID della prenotazione da cancellare: "); 
-                            Guid idAdminCanc = Guid.Parse(Console.ReadLine());
-                            _sistema.CancellaPrenotazione(idAdminCanc);
-                            Console.WriteLine("Cancellata.");
+                            var tuttePrenotazioni = _sistema.OttieniTuttePrenotazioni();
+                            if (tuttePrenotazioni.Count == 0)
+                            {
+                                Console.WriteLine("Non ci sono prenotazioni da cancellare.");
+                                break;
+                            }
+
+                            Console.WriteLine("\n--- Tutte le Prenotazioni ---");
+                            for (int i = 0; i < tuttePrenotazioni.Count; i++)
+                            {
+                                var p = tuttePrenotazioni[i];
+                                Console.WriteLine($"{i + 1}. Studente: {p.NomeStudente} | Aula: {p.AulaPrenotata.Nome} | {p.Giorno:dd/MM/yyyy} | Ore: {p.FasciaOraria} | Posti: {p.PostiRichiesti}");
+                            }
+
+                            Console.Write("Seleziona il numero della prenotazione da cancellare: ");
+                            int sceltaCancellazioneAdmin = int.Parse(Console.ReadLine()) - 1;
+
+                            if (sceltaCancellazioneAdmin < 0 || sceltaCancellazioneAdmin >= tuttePrenotazioni.Count)
+                            {
+                                Console.WriteLine("Errore: numero prenotazione non valido.");
+                                break;
+                            }
+
+                            Guid idAdminCanc = tuttePrenotazioni[sceltaCancellazioneAdmin].Id;
+                            if (_sistema.CancellaPrenotazione(idAdminCanc)) Console.WriteLine("Prenotazione cancellata con successo!");
+                            else Console.WriteLine("Errore durante la cancellazione.");
                             break;
 
                         case "6": indietro = true; break;
