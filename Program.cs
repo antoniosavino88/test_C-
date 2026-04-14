@@ -7,6 +7,7 @@ namespace GestioneAuleStudio
     class Program
     {
         static SistemaGestione _sistema = new SistemaGestione();
+        static SistemaAutenticazione _autenticazione = new SistemaAutenticazione();
         static string[] _fasceOrarie = { "8-9", "9-10", "10-11", "11-12", "12-13", "13-14", "14-15", "15-16", "16-17", "17-18", "18-19", "19-20" };
 
         static void Main(string[] args)
@@ -20,29 +21,134 @@ namespace GestioneAuleStudio
             {
                 Console.Clear();
                 Console.WriteLine("=== SISTEMA DI PRENOTAZIONE AULE STUDIO ===");
-                Console.WriteLine("1. Accesso Studente");
-                Console.WriteLine("2. Accesso Amministratore");
+                Console.WriteLine("1. Area Studente");
+                Console.WriteLine("2. Area Amministratore");
                 Console.WriteLine("3. Esci");
                 Console.Write("Scegli un'opzione: ");
 
                 string scelta = Console.ReadLine();
                 switch (scelta)
                 {
-                    case "1": MenuStudente(); break;
-                    case "2": MenuAmministratore(); break;
+                    case "1": AreaStudente(); break;
+                    case "2": AreaAmministratore(); break;
                     case "3": esci = true; break;
                 }
             }
         }
 
         // ==============================
+        //      AREA STUDENTE
+        // ==============================
+        static void AreaStudente()
+        {
+            Console.Clear();
+            Console.WriteLine("=== AREA STUDENTE ===");
+            Console.WriteLine("1. Accedi");
+            Console.WriteLine("2. Iscriviti");
+            Console.WriteLine("3. Torna al menu principale");
+            Console.Write("Scegli un'opzione: ");
+
+            string scelta = Console.ReadLine();
+            try
+            {
+                switch (scelta)
+                {
+                    case "1":
+                        Console.Write("Nome utente: ");
+                        string nomeLogin = Console.ReadLine();
+                        Console.Write("Password: ");
+                        string passwordLogin = Console.ReadLine();
+                        
+                        var studenteLoggato = _autenticazione.LoginStudente(nomeLogin, passwordLogin);
+                        Console.WriteLine("Accesso effettuato con successo!");
+                        Console.WriteLine("Premi un tasto per continuare...");
+                        Console.ReadKey();
+                        MenuStudente(studenteLoggato.Nome);
+                        break;
+
+                    case "2":
+                        Console.Write("Nome utente: ");
+                        string nomeRegistrazione = Console.ReadLine();
+                        Console.Write("Password: ");
+                        string passwordRegistrazione = Console.ReadLine();
+                        
+                        _autenticazione.RegistraStudente(nomeRegistrazione, passwordRegistrazione);
+                        Console.WriteLine("Registrazione effettuata con successo! Ora puoi accedere.");
+                        Console.WriteLine("Premi un tasto per continuare...");
+                        Console.ReadKey();
+                        break;
+
+                    case "3":
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ERRORE: {ex.Message}");
+                Console.WriteLine("Premi un tasto per continuare...");
+                Console.ReadKey();
+            }
+        }
+
+        // ==============================
+        //      AREA AMMINISTRATORE
+        // ==============================
+        static void AreaAmministratore()
+        {
+            Console.Clear();
+            Console.WriteLine("=== AREA AMMINISTRATORE ===");
+            Console.WriteLine("1. Accedi");
+            Console.WriteLine("2. Registra nuovo amministratore");
+            Console.WriteLine("3. Torna al menu principale");
+            Console.Write("Scegli un'opzione: ");
+
+            string scelta = Console.ReadLine();
+            try
+            {
+                switch (scelta)
+                {
+                    case "1":
+                        Console.Write("Nome utente: ");
+                        string nomeLogin = Console.ReadLine();
+                        Console.Write("Password: ");
+                        string passwordLogin = Console.ReadLine();
+                        
+                        var adminLoggato = _autenticazione.LoginAmministratore(nomeLogin, passwordLogin);
+                        Console.WriteLine("Accesso effettuato con successo!");
+                        Console.WriteLine("Premi un tasto per continuare...");
+                        Console.ReadKey();
+                        MenuAmministratore(adminLoggato.Nome);
+                        break;
+
+                    case "2":
+                        Console.Write("Nome utente: ");
+                        string nomeRegistrazione = Console.ReadLine();
+                        Console.Write("Password: ");
+                        string passwordRegistrazione = Console.ReadLine();
+                        
+                        _autenticazione.RegistraAmministratore(nomeRegistrazione, passwordRegistrazione);
+                        Console.WriteLine("Amministratore registrato con successo!");
+                        Console.WriteLine("Premi un tasto per continuare...");
+                        Console.ReadKey();
+                        break;
+
+                    case "3":
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ERRORE: {ex.Message}");
+                Console.WriteLine("Premi un tasto per continuare...");
+                Console.ReadKey();
+            }
+        }
+
+        // ==============================
         //        MENU STUDENTE
         // ==============================
-        static void MenuStudente()
+        static void MenuStudente(string nomeStudente)
         {
-            Console.Write("\nInserisci il tuo nome: ");
-            string nomeStudente = Console.ReadLine();
-
             bool indietro = false;
             while (!indietro)
             {
@@ -229,12 +335,12 @@ namespace GestioneAuleStudio
         // ==============================
         //      MENU AMMINISTRATORE
         // ==============================
-        static void MenuAmministratore()
+        static void MenuAmministratore(string nomeAdmin)
         {
             bool indietro = false;
             while (!indietro)
             {
-                Console.WriteLine("\n--- Menu Amministratore ---");
+                Console.WriteLine($"\n--- Menu Amministratore: {nomeAdmin} ---");
                 Console.WriteLine("1. Visualizza tutte le prenotazioni");
                 Console.WriteLine("2. Aggiungi Aula");
                 Console.WriteLine("3. Rimuovi Aula");
